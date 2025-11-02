@@ -8,16 +8,20 @@
   <meta name="description" content="ローカル保存、暗号化、スクショ・録画・サムネイルの保護、PIN・生体認証搭載。紙や標準メモより安全に現場メモをまとめて管理。シフト解析機能付き高機能メモアプリ。">
   <meta name="theme-color" content="#91C847">
 
+  <!-- OGP/Twitter -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="Vaulta｜紙や標準メモより安全。シフト解析もできるメモ帳">
   <meta property="og:description" content="ローカル保存・暗号化・スクショ/録画/サムネイル保護・PIN/生体認証。訪問介護の現場メモとシフト解析を端末内で完結。">
   <meta property="og:url" content="./vaulta.html">
-  <meta property="og:image" content="../assets/img/Vaulta.png">
+  <!-- ▼ OGP画像にアプリアイコン（拡張子なし指定どおり） -->
+  <meta property="og:image" content="../assets/img/vaulta-icon">
   <meta name="twitter:card" content="summary_large_image">
 
   <link rel="stylesheet" href="../styles.css">
-  <link rel="icon" href="../assets/img/dev.icon.png">
+  <!-- ▼ タブのアイコン（favicon） -->
+  <link rel="icon" href="../assets/img/dev-icon.png">
 
+  <!-- 構造化データ -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -35,11 +39,13 @@
 <body>
   <header>
     <div class="container" style="display:flex; justify-content:space-between; gap:16px;">
+      <!-- ▼ アイコン/テキスト＝ホームへ -->
       <a class="brand-link" href="../" aria-label="ホームへ">
-        <img src="../assets/img/dev.icon.png" alt="公式サイトアイコン" class="brand__logo">
+        <img src="../assets/img/dev-icon.png" alt="公式サイトアイコン" class="brand__logo">
         <strong>公式サイト</strong>
       </a>
       <nav>
+        <!-- アプリ個別リンク（必要に応じて作成） -->
         <a href="./vaulta-releases.html">リリース</a>
         <a href="./vaulta-terms.html">利用規約</a>
         <a href="./vaulta-privacy.html">プライバシー</a>
@@ -52,8 +58,9 @@
       <h1>Vaulta</h1>
       <p>紙や標準メモより安全。シフト解析もできるメモ帳</p>
       <div class="store-badges" style="margin-top:12px;">
+        <!-- ▼ Google Play 公式バッジ画像（gp-icon.png） -->
         <a href="https://play.google.com/store/apps/details?id=com.younashinashi.vaulta" target="_blank" rel="noopener" aria-label="Google Play で Vaulta を入手">
-          <img src="../assets/img/google-play-badge-jp.png" alt="Google Play で手に入れよう">
+          <img src="../assets/img/gp-icon.png" alt="Google Play で手に入れよう">
         </a>
       </div>
     </section>
@@ -62,16 +69,24 @@
       <h2>スクリーンショット</h2>
       <div class="screens">
         <figure class="screenshot">
-          <img src="../assets/img/1.png" alt="Vaulta スクリーンショット1">
+          <img src="../assets/img/vaulta-1.png" alt="Vaulta スクリーンショット1">
           <figcaption>シフト解析と一覧</figcaption>
         </figure>
         <figure class="screenshot">
-          <img src="../assets/img/2.png" alt="Vaulta スクリーンショット2">
+          <img src="../assets/img/vaulta-2.png" alt="Vaulta スクリーンショット2">
           <figcaption>当日メモの入力</figcaption>
         </figure>
         <figure class="screenshot">
-          <img src="../assets/img/3.png" alt="Vaulta スクリーンショット3">
+          <img src="../assets/img/vaulta-3.png" alt="Vaulta スクリーンショット3">
           <figcaption>ロック・セキュリティ設定</figcaption>
+        </figure>
+        <figure class="screenshot">
+          <img src="../assets/img/vaulta-4.png" alt="Vaulta スクリーンショット4">
+          <figcaption>検索・抽出設定</figcaption>
+        </figure>
+        <figure class="screenshot">
+          <img src="../assets/img/vaulta-5.png" alt="Vaulta スクリーンショット5">
+          <figcaption>その他の機能</figcaption>
         </figure>
       </div>
     </section>
@@ -84,7 +99,8 @@
     <section class="card">
       <h2>詳しい説明</h2>
       <p>訪問介護を、もっとシンプルに。</p>
-      <p>～スケジュール管理・記録・報告～<br>毎日の煩雑な業務をワンタップで“見える化”するアプリです。</p>
+      <p>～スケジュール管理・記録・報告～<br>
+      毎日の煩雑な業務をワンタップで“見える化”するアプリです。</p>
       <p>メール本文を貼り付けるだけで、受け取った訪問予定を具体的に整理し、移動時間の確認まで端末内で完結。個人情報は端末内で安全に管理し、現場の負担を大きく減らします。</p>
 
       <h3>① セキュア設計（就業規則に配慮）</h3>
