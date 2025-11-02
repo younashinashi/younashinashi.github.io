@@ -22,3 +22,25 @@ nav a:hover{opacity:1;text-decoration:underline}
 .btn--ghost{background:transparent;color:var(--ink)}
 footer{border-top:1px solid var(--border);margin-top:28px}
 .small{color:var(--muted);font-size:.92em}
+/* --- Store badge & screenshots --- */
+.store-badges { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+.store-badges img { height: 48px; width:auto; display:block; }
+
+.screens { 
+  display:grid; 
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+  gap:16px; margin-top:14px; 
+}
+.screenshot {
+  background: var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:10px;
+}
+.screenshot img {
+  width:100%; height:auto; display:block; border-radius:8px;
+}
+.screenshot figcaption { 
+  margin-top:6px; font-size:.9em; color:var(--muted); 
+}
+
