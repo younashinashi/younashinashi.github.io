@@ -6,21 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <meta name="description" content="アプリの公式サイト。各アプリの紹介・リリース・ポリシーを個別ページで掲載。">
-  <!-- テーマカラー（梨グリーン） -->
   <meta name="theme-color" content="#91C847">
   <link rel="stylesheet" href="./styles.css">
-  <!-- タブのアイコン（favicon） -->
   <link rel="icon" href="./assets/img/dev.icon.png">
 </head>
 <body>
   <header>
     <div class="container" style="display:flex; justify-content:space-between; gap:16px;">
-      <!-- ① アイコン＆テキストどちらを押してもホームへ -->
       <a class="brand-link" href="./" aria-label="ホームへ">
         <img src="./assets/img/dev.icon.png" alt="公式サイトアイコン" class="brand__logo">
         <strong>公式サイト</strong>
       </a>
-      <!-- ※ グローバルではホーム/GitHubのみ。リリース・規約・プライバシーは各アプリのページで個別表示 -->
       <nav>
         <a href="./">ホーム</a>
         <a href="https://github.com/YOUNASHINASHI/YOUNASHINASHI.github.io" target="_blank" rel="noopener">GitHub</a>
@@ -30,7 +26,6 @@
 
   <main class="container">
     <section class="hero">
-      <!-- ② ヒーローテキストの差し替え（Androidバッジは削除） -->
       <h1>ケアの負担を軽くする、人にやさしいテクノロジーを設計します。</h1>
       <p class="small">アプリの情報は各アプリの個別ページでご案内します。</p>
     </section>
@@ -45,13 +40,11 @@
           </div>
           <p class="small">紙や標準メモより安全。シフト解析もできるメモ帳</p>
           <div class="store-badges">
-            <!-- ④ Google Play 公式バッジ画像（日本語）。画像名・場所が違う場合は src を合わせてください -->
             <a href="https://play.google.com/store/apps/details?id=com.younashinashi.vaulta" target="_blank" rel="noopener" aria-label="Google Play で Vaulta を入手">
               <img src="./assets/img/google-play-badge-jp.png" alt="Google Play で手に入れよう">
             </a>
             <a class="btn btn--ghost" href="./apps/vaulta.html">くわしく見る</a>
           </div>
-          <!-- ⑤ リリース・規約・プライバシーはアプリごとに別表示（リンクはアプリページ側に配置） -->
         </article>
       </div>
     </section>
