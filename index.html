@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>公式サイト</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="アプリの公式サイト。リリース情報、利用規約、プライバシーポリシーを掲載。">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header>
+    <div class="container" style="display:flex; justify-content:space-between; gap:16px;">
+      <div class="brand">
+        <div class="brand__logo"></div>
+        <strong>公式サイト</strong>
+      </div>
+      <nav>
+        <a href="./">ホーム</a>
+        <a href="./releases.html">リリース</a>
+        <a href="./terms.html">利用規約</a>
+        <a href="./privacy.html">プライバシー</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <span class="badge">Android</span>
+      <h1>訪問介護と日常を、もう少しシンプルに。</h1>
+      <p>アプリの情報・更新履歴・各種ポリシーを掲載しています。</p>
+      <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+        <a class="btn" href="./releases.html">最新リリースを見る</a>
+        <a class="btn btn--ghost" href="https://github.com/<新ユーザー名>/<新ユーザー名>.github.io" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </section>
+
+    <section>
+      <h2>アプリ</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>Vaulta</h3>
+          <p class="small">セキュアな現場メモ＋シフト解析。端末内保存／暗号化／スクショ保護。</p>
+          <a class="btn" href="#" target="_blank" rel="noopener">Google Play</a>
+        </article>
+
+        <article class="card">
+          <h3>PulsePause</h3>
+          <p class="small">ワークアウト記録・レストポーズ対応・1RM推定。</p>
+          <a class="btn" href="#" target="_blank" rel="noopener">Google Play</a>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container small">
+      <p>&copy; <span id="y"></span> <新ユーザー名></p>
+    </div>
+  </footer>
+
+  <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+</body>
+</html>
