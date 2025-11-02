@@ -17,6 +17,7 @@
   <meta name="twitter:card" content="summary_large_image">
 
   <link rel="stylesheet" href="../styles.css">
+  <!-- タブのアイコン（favicon） -->
   <link rel="icon" href="../assets/img/dev.icon">
 
   <!-- 構造化データ -->
@@ -37,13 +38,13 @@
 <body>
   <header>
     <div class="container" style="display:flex; justify-content:space-between; gap:16px;">
-      <!-- アイコン＆テキストどちらを押してもホームへ戻る -->
+      <!-- ① アイコン＆テキストどちらを押してもホームへ -->
       <a class="brand-link" href="../" aria-label="ホームへ">
         <img src="../assets/img/dev.icon" alt="公式サイトアイコン" class="brand__logo">
         <strong>公式サイト</strong>
       </a>
       <nav>
-        <!-- アプリごとの個別ページへリンク（※あとでファイルを作る想定） -->
+        <!-- ⑤ アプリ個別のリンクをこちらに表示 -->
         <a href="./vaulta-releases.html">リリース</a>
         <a href="./vaulta-terms.html">利用規約</a>
         <a href="./vaulta-privacy.html">プライバシー</a>
@@ -53,10 +54,11 @@
 
   <main class="container">
     <section class="hero">
-      <span class="badge">Android</span>
+      <!-- Androidバッジは削除 -->
       <h1>Vaulta</h1>
       <p>紙や標準メモより安全。シフト解析もできるメモ帳</p>
       <div class="store-badges" style="margin-top:12px;">
+        <!-- ④ Google Play 公式バッジ画像（日本語） -->
         <a href="https://play.google.com/store/apps/details?id=com.younashinashi.vaulta" target="_blank" rel="noopener" aria-label="Google Play で Vaulta を入手">
           <img src="../assets/img/google-play-badge-jp.png" alt="Google Play で手に入れよう">
         </a>
@@ -81,6 +83,7 @@
       </div>
     </section>
 
+    <!-- 以下、説明は前回どおり（省略せず掲載） -->
     <section class="card">
       <h2>簡単な説明</h2>
       <p>ローカル保存、暗号化、スクショ・録画・サムネイルの保護、PIN・生体認証搭載。紙や標準メモより安全に現場メモをまとめて管理。シフト解析機能付き高機能メモアプリ。</p>
