@@ -1,0 +1,88 @@
+name: Ingest Release (from Apps)
+
+on:
+  repository_dispatch:
+    types: [vaulta_release, pulsepause_release]
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # JSONを更新してコミットするため
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ingest release payload into JSON
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            // 1) どのアプリかを判定（event.action = vaulta_release / pulsepause_release）
+            const appAction = context.payload.action || '';
+            let appKey = '';
+            if (appAction === 'vaulta_release') appKey = 'vaulta';
+            else if (appAction === 'pulsepause_release') appKey = 'pulsepause';
+            else {
+              core.setFailed(`Unknown action: ${appAction}`);
+              return;
+            }
+
+            // 2) JSONパス
+            const jsonPath = path.join(process.cwd(), 'data', 'releases', `${appKey}.json`);
+            if (!fs.existsSync(jsonPath)) {
+              core.setFailed(`Missing JSON file: ${jsonPath}`);
+              return;
+            }
+
+            // 3) 受信ペイロード（アプリ側が送ってくる）
+            const payload = context.payload.client_payload || {};
+            // 期待する項目：
+            // {
+            //   tag: "v2.23.0+173",
+            //   versionName: "2.23.0",
+            //   versionCode: 173,
+            //   title: "Vaulta 2.23.0",
+            //   body: "変更点...\n- ～\n- ～",
+            //   htmlUrl: "https://github.com/ORG/REPO/releases/tag/v2.23.0+173",
+            //   publishedAt: "2025-11-02T07:00:00Z"
+            // }
+
+            // 4) JSON読み込み
+            const raw = fs.readFileSync(jsonPath, 'utf8');
+            let arr = [];
+            try { arr = JSON.parse(raw); } catch(e) {
+              core.setFailed(`Invalid JSON at ${jsonPath}: ${e.message}`);
+              return;
+            }
+
+            // 5) 既存同タグがあれば上書き、なければ先頭に追加
+            const idx = arr.findIndex(x => x.tag === payload.tag);
+            const entry = {
+              tag: payload.tag || '',
+              versionName: payload.versionName || '',
+              versionCode: payload.versionCode || null,
+              title: payload.title || payload.tag || '',
+              body: payload.body || '',
+              htmlUrl: payload.htmlUrl || '',
+              publishedAt: payload.publishedAt || new Date().toISOString()
+            };
+
+            if (idx >= 0) {
+              arr[idx] = entry;
+            } else {
+              arr.unshift(entry);
+            }
+
+            // 6) JSON保存（整形）
+            fs.writeFileSync(jsonPath, JSON.stringify(arr, null, 2) + '\n', 'utf8');
+
+      - name: Commit & Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/releases/*.json
+          git commit -m "chore(releases): ingest ${GITHUB_EVENT_NAME} ${GITHUB_ACTION}" || echo "No changes to commit"
+          git push
