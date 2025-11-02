@@ -8,13 +8,15 @@
   <meta name="description" content="アプリの公式サイト。各アプリの紹介・リリース・ポリシーを個別ページで掲載。">
   <meta name="theme-color" content="#91C847">
   <link rel="stylesheet" href="./styles.css">
-  <link rel="icon" href="./assets/img/dev.icon.png">
+  <!-- ▼ タブのアイコン（favicon） -->
+  <link rel="icon" href="./assets/img/dev-icon.png">
 </head>
 <body>
   <header>
     <div class="container" style="display:flex; justify-content:space-between; gap:16px;">
+      <!-- ▼ アイコン/テキストどちらを押してもホームへ -->
       <a class="brand-link" href="./" aria-label="ホームへ">
-        <img src="./assets/img/dev.icon.png" alt="公式サイトアイコン" class="brand__logo">
+        <img src="./assets/img/dev-icon.png" alt="公式サイトアイコン" class="brand__logo">
         <strong>公式サイト</strong>
       </a>
       <nav>
@@ -35,13 +37,15 @@
       <div class="grid">
         <article class="card">
           <div style="display:flex; align-items:center; gap:10px;">
-            <img src="./assets/img/Vaulta.png" alt="Vaulta アイコン" style="width:40px;height:40px;border-radius:8px;object-fit:cover;">
+            <!-- ▼ Vaultaのアイコン（拡張子なし指定どおり） -->
+            <img src="./assets/img/vaulta-icon" alt="Vaulta アイコン" style="width:40px;height:40px;border-radius:8px;object-fit:cover;">
             <h3 style="margin:0">Vaulta</h3>
           </div>
           <p class="small">紙や標準メモより安全。シフト解析もできるメモ帳</p>
           <div class="store-badges">
+            <!-- ▼ Google Play 公式バッジ画像（gp-icon.png） -->
             <a href="https://play.google.com/store/apps/details?id=com.younashinashi.vaulta" target="_blank" rel="noopener" aria-label="Google Play で Vaulta を入手">
-              <img src="./assets/img/google-play-badge-jp.png" alt="Google Play で手に入れよう">
+              <img src="./assets/img/gp-icon.png" alt="Google Play で手に入れよう">
             </a>
             <a class="btn btn--ghost" href="./apps/vaulta.html">くわしく見る</a>
           </div>
