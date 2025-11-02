@@ -13,12 +13,10 @@
   <meta property="og:title" content="Vaulta｜紙や標準メモより安全。シフト解析もできるメモ帳">
   <meta property="og:description" content="ローカル保存・暗号化・スクショ/録画/サムネイル保護・PIN/生体認証。訪問介護の現場メモとシフト解析を端末内で完結。">
   <meta property="og:url" content="./vaulta.html">
-  <!-- ▼ OGP画像にアプリアイコン（拡張子なし指定どおり） -->
   <meta property="og:image" content="../assets/img/vaulta-icon">
   <meta name="twitter:card" content="summary_large_image">
 
   <link rel="stylesheet" href="../styles.css">
-  <!-- ▼ タブのアイコン（favicon） -->
   <link rel="icon" href="../assets/img/dev-icon.png">
 
   <!-- 構造化データ -->
@@ -39,13 +37,12 @@
 <body>
   <header>
     <div class="container" style="display:flex; justify-content:space-between; gap:16px;">
-      <!-- ▼ アイコン/テキスト＝ホームへ -->
+      <!-- アイコン／テキストをクリックでホームへ -->
       <a class="brand-link" href="../" aria-label="ホームへ">
         <img src="../assets/img/dev-icon.png" alt="公式サイトアイコン" class="brand__logo">
         <strong>公式サイト</strong>
       </a>
       <nav>
-        <!-- アプリ個別リンク（必要に応じて作成） -->
         <a href="./vaulta-releases.html">リリース</a>
         <a href="./vaulta-terms.html">利用規約</a>
         <a href="./vaulta-privacy.html">プライバシー</a>
@@ -58,11 +55,19 @@
       <h1>Vaulta</h1>
       <p>紙や標準メモより安全。シフト解析もできるメモ帳</p>
       <div class="store-badges" style="margin-top:12px;">
-        <!-- ▼ Google Play 公式バッジ画像（gp-icon.png） -->
         <a href="https://play.google.com/store/apps/details?id=com.younashinashi.vaulta" target="_blank" rel="noopener" aria-label="Google Play で Vaulta を入手">
           <img src="../assets/img/gp-icon.png" alt="Google Play で手に入れよう">
         </a>
       </div>
+    </section>
+
+    <!-- ここを追加：アプリアイコンを表示（指定の文言に変更） -->
+    <section class="card" aria-labelledby="appicon-title">
+      <h2 id="appicon-title">アプリアイコンVaulta（ヴォルタ）</h2>
+      <figure class="screenshot" style="max-width:160px;">
+        <img src="../assets/img/vaulta-icon" alt="アプリアイコンVaulta（ヴォルタ）" style="width:100%;height:auto;border-radius:24px;display:block;">
+        <figcaption class="small">アプリアイコンVaulta（ヴォルタ）</figcaption>
+      </figure>
     </section>
 
     <section class="card">
