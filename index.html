@@ -2,25 +2,27 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <title>公式サイト</title>
+  <title>公式サイト｜YOUNASHINASHI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="アプリの公式サイト。リリース情報、利用規約、プライバシーポリシーを掲載。">
+  <meta name="description" content="アプリの公式サイト。各アプリの紹介・リリース・ポリシーを個別ページで掲載。">
+  <!-- ブラウザUIのテーマカラー（梨グリーン） -->
+  <meta name="theme-color" content="#91C847">
   <link rel="stylesheet" href="./styles.css">
-  <link rel="icon" href="./assets/img/Vaulta.png">
+  <!-- サイトアイコンは dev.icon を使用 -->
+  <link rel="icon" href="./assets/img/dev.icon">
 </head>
 <body>
   <header>
     <div class="container" style="display:flex; justify-content:space-between; gap:16px;">
-      <div class="brand">
-        <img src="./assets/img/Vaulta.png" alt="Vaulta アイコン" class="brand__logo" style="object-fit:cover;">
+      <a class="brand-link" href="./" aria-label="ホームへ">
+        <img src="./assets/img/dev.icon" alt="公式サイトアイコン" class="brand__logo">
         <strong>公式サイト</strong>
-      </div>
+      </a>
+      <!-- ※ リリース/規約/プライバシーは「アプリごと」に別表示する要件に合わせ、グローバルナビからは外します -->
       <nav>
         <a href="./">ホーム</a>
-        <a href="./releases.html">リリース</a>
-        <a href="./terms.html">利用規約</a>
-        <a href="./privacy.html">プライバシー</a>
+        <a href="https://github.com/YOUNASHINASHI/YOUNASHINASHI.github.io" target="_blank" rel="noopener">GitHub</a>
       </nav>
     </div>
   </header>
@@ -29,11 +31,7 @@
     <section class="hero">
       <span class="badge">Android</span>
       <h1>訪問介護と日常を、もう少しシンプルに。</h1>
-      <p>アプリの情報・更新履歴・各種ポリシーを掲載しています。</p>
-      <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
-        <a class="btn" href="./releases.html">最新リリースを見る</a>
-        <a class="btn btn--ghost" href="https://github.com/<新ユーザー名>/<新ユーザー名>.github.io" target="_blank" rel="noopener">GitHub</a>
-      </div>
+      <p>アプリの情報は各アプリの個別ページでご案内します。</p>
     </section>
 
     <section>
@@ -46,30 +44,22 @@
           </div>
           <p class="small">紙や標準メモより安全。シフト解析もできるメモ帳</p>
           <div class="store-badges">
-            <!-- Google Play 公式バッジ画像を上げていなければ下のテキストボタンでOK -->
-            <!-- 公式バッジを assets/img/google-play-badge-jp.png で置いた場合は、コメントアウトを外して使ってください -->
-            <!--
+            <!-- Google Play 公式バッジ画像（日本語）を配置済みならこちら -->
             <a href="https://play.google.com/store/apps/details?id=com.younashinashi.vaulta" target="_blank" rel="noopener" aria-label="Google Play で Vaulta を入手">
               <img src="./assets/img/google-play-badge-jp.png" alt="Google Play で手に入れよう">
             </a>
-            -->
-            <a class="btn" href="https://play.google.com/store/apps/details?id=com.younashinashi.vaulta" target="_blank" rel="noopener">Google Play</a>
             <a class="btn btn--ghost" href="./apps/vaulta.html">くわしく見る</a>
           </div>
         </article>
 
-        <article class="card">
-          <h3>PulsePause</h3>
-          <p class="small">ワークアウト記録・レストポーズ対応・1RM推定。</p>
-          <a class="btn" href="#" target="_blank" rel="noopener">Google Play</a>
-        </article>
+        <!-- ほかのアプリは必要になったら追加 -->
       </div>
     </section>
   </main>
 
   <footer>
     <div class="container small">
-      <p>&copy; <span id="y"></span> <新ユーザー名></p>
+      <p>&copy; <span id="y"></span> YOUNASHINASHI. All Rights Reserved.</p>
     </div>
   </footer>
 
