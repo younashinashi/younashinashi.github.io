@@ -1,0 +1,59 @@
+name: Notify Website on Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Extract release info
+        id: info
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const rel = context.payload.release;
+            const tag = rel.tag_name;
+            const title = rel.name || tag;
+            const body = rel.body || '';
+            const htmlUrl = rel.html_url;
+            const publishedAt = rel.published_at;
+
+            // 例: タグ "v2.23.0+173" から versionName と versionCode を推定
+            // あなたのタグ運用に合わせて調整OK
+            let versionName = '';
+            let versionCode = null;
+            const m = /^v?(\d+\.\d+\.\d+)(?:\+(\d+))?$/.exec(tag || '');
+            if (m) {
+              versionName = m[1];
+              versionCode = m[2] ? parseInt(m[2],10) : null;
+            }
+
+            core.setOutput('tag', tag);
+            core.setOutput('title', title);
+            core.setOutput('body', body);
+            core.setOutput('htmlUrl', htmlUrl);
+            core.setOutput('publishedAt', publishedAt);
+            core.setOutput('versionName', versionName);
+            core.setOutput('versionCode', versionCode);
+
+      - name: Dispatch to Website repo
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.WEBSITE_DISPATCH_TOKEN }}
+          repository: YOUNASHINASHI/YOUNASHINASHI.github.io
+          event-type: vaulta_release
+          client-payload: |
+            {
+              "tag": "${{ steps.info.outputs.tag }}",
+              "versionName": "${{ steps.info.outputs.versionName }}",
+              "versionCode": ${{ steps.info.outputs.versionCode }},
+              "title": "${{ steps.info.outputs.title }}",
+              "body": ${JSON.stringify(steps.info.outputs.body)},
+              "htmlUrl": "${{ steps.info.outputs.htmlUrl }}",
+              "publishedAt": "${{ steps.info.outputs.publishedAt }}"
+            }
