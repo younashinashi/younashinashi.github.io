@@ -43,6 +43,26 @@ nav a:hover { opacity:1; text-decoration: underline; }
 .hero h1 { margin:.2em 0 .1em; font-size: clamp(28px, 4.2vw, 40px); }
 .hero p { color: var(--muted); margin:.2em 0; }
 
+/* 新規：ヒーロー画像 */
+.hero__img {
+  width: 100%;
+  display: block;
+  border-radius: 12px;
+  object-fit: cover;
+  /* 2400×1000（約 12:5）の帯として安定表示 */
+  max-height: clamp(180px, 28vw, 360px);
+  aspect-ratio: 12 / 5;
+  object-position: center;
+}
+@media (max-width: 640px) {
+  .hero__img {
+    /* モバイルは少し縦に見せる */
+    max-height: none;
+    aspect-ratio: 16 / 9;
+    object-position: center 40%;
+  }
+}
+
 /* グリッド＆カード */
 .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:16px; margin: 18px 0 0; }
 .card { background: var(--card); border:1px solid var(--border); border-radius:12px; padding:16px; }
