@@ -43,23 +43,27 @@ nav a:hover { opacity:1; text-decoration: underline; }
 .hero h1 { margin:.2em 0 .1em; font-size: clamp(28px, 4.2vw, 40px); }
 .hero p { color: var(--muted); margin:.2em 0; }
 
-/* 新規：ヒーロー画像 */
+/* ヒーロー画像（PCは“帯”っぽく、SPは全体表示） */
 .hero__img {
   width: 100%;
   display: block;
   border-radius: 12px;
-  object-fit: cover;
+  object-fit: cover;      /* PC：トリミングしてでも満幅 */
   /* 2400×1000（約 12:5）の帯として安定表示 */
   max-height: clamp(180px, 28vw, 360px);
   aspect-ratio: 12 / 5;
   object-position: center;
 }
+
+/* スマホ縦画面では“画像全体が映る”ように切り替え */
 @media (max-width: 640px) {
   .hero__img {
-    /* モバイルは少し縦に見せる */
-    max-height: none;
-    aspect-ratio: 16 / 9;
-    object-position: center 40%;
+    object-fit: contain;  /* ← ここがポイント：全体表示 */
+    background: var(--card); /* レターボックスの背景色 */
+    max-height: none;     /* 高さの上限を解除 */
+    height: auto;         /* 画像の縦横比に従う */
+    aspect-ratio: auto;   /* 比率固定を解除 */
+    object-position: center center; /* 余白は上下左右に均等 */
   }
 }
 
