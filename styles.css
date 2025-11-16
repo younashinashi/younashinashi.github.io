@@ -1,6 +1,6 @@
 :root {
-  /* 洋梨・和梨を連想させるグリーン系 */
-  --brand: #91C847;  /* メイン（pear green） */
+  /グリーン系/
+  --brand: #91C847; 
   --brand-ink: #073b14;
   --ink: #111;
   --muted: #666;
@@ -26,53 +26,45 @@ html, body {
 a { color: inherit; }
 .container { max-width: 980px; margin: 0 auto; padding: 24px; }
 
-/* ヘッダー */
 header { border-bottom: 1px solid var(--border); background: var(--card); position: sticky; top: 0; z-index: 10; }
 .brand { display:flex; align-items:center; gap:12px; }
 .brand__logo { width: 28px; height: 28px; border-radius: 6px; object-fit: cover; }
 .brand-link { display:flex; align-items:center; gap:12px; text-decoration: none; }
 .brand-link:hover { opacity:.9; }
 
-/* ナビ */
 nav { display:flex; gap:14px; align-items:center; flex-wrap: wrap; }
 nav a { text-decoration: none; opacity:.92; }
 nav a:hover { opacity:1; text-decoration: underline; }
 
-/* ヒーロー */
 .hero { padding: 36px 0 12px; }
 .hero h1 { margin:.2em 0 .1em; font-size: clamp(28px, 4.2vw, 40px); }
 .hero p { color: var(--muted); margin:.2em 0; }
 
-/* ヒーロー画像（PCは“帯”っぽく、SPは全体表示） */
 .hero__img {
   width: 100%;
   display: block;
   border-radius: 12px;
-  object-fit: cover;      /* PC：トリミングしてでも満幅 */
-  /* 2400×1000（約 12:5）の帯として安定表示 */
+  object-fit: cover;      
   max-height: clamp(180px, 28vw, 360px);
   aspect-ratio: 12 / 5;
   object-position: center;
 }
 
-/* スマホ縦画面では“画像全体が映る”ように切り替え */
 @media (max-width: 640px) {
   .hero__img {
-    object-fit: contain;  /* ← ここがポイント：全体表示 */
-    background: var(--card); /* レターボックスの背景色 */
-    max-height: none;     /* 高さの上限を解除 */
-    height: auto;         /* 画像の縦横比に従う */
-    aspect-ratio: auto;   /* 比率固定を解除 */
-    object-position: center center; /* 余白は上下左右に均等 */
+    object-fit: contain;  
+    background: var(--card); 
+    max-height: none;    
+    height: auto;        
+    aspect-ratio: auto;   
+    object-position: center center; 
   }
 }
 
-/* グリッド＆カード */
 .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:16px; margin: 18px 0 0; }
 .card { background: var(--card); border:1px solid var(--border); border-radius:12px; padding:16px; }
 .card h3 { margin:.2em 0; }
 
-/* バッジ・ボタン */
 .badge { display:inline-block; padding:2px 8px; border-radius:999px; background: var(--brand); color:var(--brand-ink); font-weight:700; font-size:.85em; }
 .btn {
   display:inline-block; padding:10px 14px; border-radius:10px;
@@ -102,6 +94,5 @@ nav a:hover { opacity:1; text-decoration: underline; }
 }
 .screenshot figcaption { margin-top:6px; font-size:.9em; color:var(--muted); }
 
-/* フッター */
 footer { border-top: 1px solid var(--border); margin-top: 28px; }
 .small { color: var(--muted); font-size:.92em; }
