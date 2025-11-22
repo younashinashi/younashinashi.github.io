@@ -1,221 +1,170 @@
-name: Manage Vaulta Releases (Add/Update/Delete)
+env:
+  FILE: data/releases/vaulta.json
 
-on:
-  workflow_dispatch:
-    inputs:
-      op:
-        description: "操作: add / update / delete"
-        required: true
-        default: "add"
-      # 主キー（推奨）: v<version_name>+<version_code> の形。update/delete で使用。
-      tag:
-        description: "対象のtag（例: v2.23.0+173）※update/delete時に推奨"
-        required: false
-      # 代替キー: 配列の0始まりindex。tagが無い時の代替（ヒューマンエラー防止のため推奨しない）
-      index:
-        description: "対象index（0始まり・任意）"
-        required: false
-      # add で主に使用（updateでも上書き可/空なら現状維持）
-      version_name:
-        description: "例: 2.23.0（add時は必須）"
-        required: false
-      version_code:
-        description: "例: 173（add時は必須）"
-        required: false
-      title:
-        description: "未入力時は 'Vaulta <version_name>' を自動設定"
-        required: false
-      body:
-        description: "本文（Markdown可・複数行OK）"
-        required: false
-      html_url:
-        description: "GitHub Release のURLなど（任意）"
-        required: false
-      published_at:
-        description: "ISO日時（未入力時は現在UTC）。例: 2025-11-03T12:34:56Z"
-        required: false
+steps:
+  - name: Checkout
+    uses: actions/checkout@v4
 
-jobs:
-  manage:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
+  - name: Ensure jq & path
+    run: |
+      sudo apt-get update -y
+      sudo apt-get install -y jq
+      mkdir -p data/releases
+      if [ ! -f "$FILE" ]; then echo "[]" > "$FILE"; fi
+      echo "Existing file:"
+      head -n 30 "$FILE" || true
 
-    env:
-      FILE: data/releases/vaulta.json
+  - name: Validate inputs
+    shell: bash
+    run: |
+      OP="${{ inputs.op }}"
+      TAG="${{ inputs.tag }}"
+      INDEX="${{ inputs.index }}"
+      VN="${{ inputs.version_name }}"
+      VC="${{ inputs.version_code }}"
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      if [ "$OP" = "add" ]; then
+        if [ -z "$VN" ] || [ -z "$VC" ]; then
+          echo "❌ add には version_name と version_code が必要です"; exit 1
+        fi
+      fi
 
-      - name: Ensure jq & path
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y jq
-          mkdir -p data/releases
-          if [ ! -f "$FILE" ]; then echo "[]" > "$FILE"; fi
-          echo "Existing file:"
-          head -n 30 "$FILE" || true
+      if [ "$OP" = "update" ] || [ "$OP" = "delete" ]; then
+        if [ -z "$TAG" ] && [ -z "$INDEX" ]; then
+          echo "❌ ${OP} には tag か index のどちらかが必要です"; exit 1
+        fi
+      fi
+      echo "✅ inputs OK"
 
-      - name: Validate inputs
-        shell: bash
-        run: |
-          OP="${{ inputs.op }}"
-          TAG="${{ inputs.tag }}"
-          INDEX="${{ inputs.index }}"
-          VN="${{ inputs.version_name }}"
-          VC="${{ inputs.version_code }}"
+  - name: Do ADD / UPDATE / DELETE
+    id: do
+    shell: bash
+    run: |
+      OP="${{ inputs.op }}"
+      TAG="${{ inputs.tag }}"
+      INDEX="${{ inputs.index }}"
+      VN="${{ inputs.version_name }}"
+      VC="${{ inputs.version_code }}"
+      TITLE_IN="${{ inputs.title }}"
+      BODY_IN='${{ toJSON(inputs.body) }}'
+      HTML_URL="${{ inputs.html_url }}"
+      PUBLISHED_AT="${{ inputs.published_at }}"
 
-          # add のときは version_name/version_code 必須
-          if [ "$OP" = "add" ]; then
-            if [ -z "$VN" ] || [ -z "$VC" ]; then
-              echo "❌ add には version_name と version_code が必要です"; exit 1
-            fi
-          fi
+      to_null_or_str() { if [ -z "$1" ]; then echo "null"; else printf '%s\n' "$(jq -Rn --arg v "$1" '$v')" ; fi; }
+      TITLE_JSON=$(to_null_or_str "$TITLE_IN")
+      HTML_JSON=$(to_null_or_str "$HTML_URL")
+      PUBAT_JSON=$(to_null_or_str "$PUBLISHED_AT")
 
-          # update/delete のとき、tag か index のどちらかが必要
-          if [ "$OP" = "update" ] || [ "$OP" = "delete" ]; then
-            if [ -z "$TAG" ] && [ -z "$INDEX" ]; then
-              echo "❌ ${OP} には tag か index のどちらかが必要です"; exit 1
-            fi
-          fi
-          echo "✅ inputs OK"
+      if [ "$OP" = "add" ]; then
+        if ! echo "$VC" | grep -Eq '^[0-9]+$'; then echo "❌ version_code は整数で"; exit 1; fi
+        TAG_NEW="v${VN}+${VC}"
+        NOW_UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+        TITLE_EFF=${TITLE_IN:-"Vaulta ${VN}"}
+        PUB_EFF=${PUBLISHED_AT:-$NOW_UTC}
 
-      - name: Do ADD / UPDATE / DELETE
-        id: do
-        shell: bash
-        run: |
-          OP="${{ inputs.op }}"
-          TAG="${{ inputs.tag }}"
-          INDEX="${{ inputs.index }}"
-          VN="${{ inputs.version_name }}"
-          VC="${{ inputs.version_code }}"
-          TITLE_IN="${{ inputs.title }}"
-          BODY_IN='${{ toJSON(inputs.body) }}'
-          HTML_URL="${{ inputs.html_url }}"
-          PUBLISHED_AT="${{ inputs.published_at }}"
+        jq -n --arg tag "$TAG_NEW" \
+              --arg vn "$VN" \
+              --argjson vc "$VC" \
+              --arg title "$TITLE_EFF" \
+              --argjson body "$BODY_IN" \
+              --arg html "$HTML_URL" \
+              --arg pub "$PUB_EFF" \
+          '{
+            tag: $tag,
+            versionName: $vn,
+            versionCode: $vc,
+            title: $title,
+            body: $body,
+            htmlUrl: $html,
+            publishedAt: $pub
+          }' > new.json
 
-          # jq用に空文字→nullへ正規化（update時の差分上書きに使う）
-          to_null_or_str() { if [ -z "$1" ]; then echo "null"; else printf '%s\n' "$(jq -Rn --arg v "$1" '$v')" ; fi; }
-          TITLE_JSON=$(to_null_or_str "$TITLE_IN")
-          HTML_JSON=$(to_null_or_str "$HTML_URL")
-          PUBAT_JSON=$(to_null_or_str "$PUBLISHED_AT")
+        tmp=$(mktemp)
+        jq --argjson new "$(cat new.json)" '. as $old | [$new] + $old' "$FILE" > "$tmp"
+        mv "$tmp" "$FILE"
+        echo "::set-output name=changed::true"
+        echo "✅ Added: $TAG_NEW"
+        head -n 30 "$FILE"
 
-          if [ "$OP" = "add" ]; then
-            # 入力検証
-            if ! echo "$VC" | grep -Eq '^[0-9]+$'; then echo "❌ version_code は整数で"; exit 1; fi
-            TAG_NEW="v${VN}+${VC}"
-            NOW_UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-            TITLE_EFF=${TITLE_IN:-"Vaulta ${VN}"}
-            PUB_EFF=${PUBLISHED_AT:-$NOW_UTC}
+      elif [ "$OP" = "update" ]; then
+        tmp=$(mktemp)
+        if [ -n "$TAG" ]; then
+          jq --arg tag "$TAG" \
+             --arg vn "$VN" \
+             --argjson vc "$( [ -n "$VC" ] && echo "$VC" || echo null )" \
+             --argjson title "$TITLE_JSON" \
+             --argjson body "$BODY_IN" \
+             --argjson html "$HTML_JSON" \
+             --argjson pub "$PUBAT_JSON" '
+            map(
+              if .tag == $tag then
+                . as $o
+                | {
+                    tag: $o.tag,
+                    versionName: (if $vn != "" then $vn else $o.versionName end),
+                    versionCode: (if $vc != null then $vc else $o.versionCode end),
+                    title: (if $title != null then $title else $o.title end),
+                    body: (if $body != null then $body else $o.body end),
+                    htmlUrl: (if $html != null then $html else $o.htmlUrl end),
+                    publishedAt: (if $pub != null then $pub else $o.publishedAt end)
+                  }
+              else .
+              end
+            )' "$FILE" > "$tmp"
+        else
+          if ! echo "$INDEX" | grep -Eq '^[0-9]+$'; then echo "❌ index は整数で"; exit 1; fi
+          jq --argjson idx "$INDEX" \
+             --arg vn "$VN" \
+             --argjson vc "$( [ -n "$VC" ] && echo "$VC" || echo null )" \
+             --argjson title "$TITLE_JSON" \
+             --argjson body "$BODY_IN" \
+             --argjson html "$HTML_JSON" \
+             --argjson pub "$PUBAT_JSON" '
+            to_entries
+            | .[$idx] as $t?
+            | if $t == null then
+                error("index範囲外")
+              else
+                (.[$idx].value) as $o
+                | .[$idx].value = {
+                    tag: $o.tag,
+                    versionName: (if $vn != "" then $vn else $o.versionName end),
+                    versionCode: (if $vc != null then $vc else $o.versionCode end),
+                    title: (if $title != null then $title else $o.title end),
+                    body: (if $body != null then $body else $o.body end),
+                    htmlUrl: (if $html != null then $html else $o.htmlUrl end),
+                    publishedAt: (if $pub != null then $pub else $o.publishedAt end)
+                  }
+                | from_entries
+              end
+            ' "$FILE" > "$tmp"
+        fi
+        mv "$tmp" "$FILE"
+        echo "::set-output name=changed::true"
+        echo "✅ Updated."
+        head -n 30 "$FILE"
 
-            # new entry を構築
-            jq -n --arg tag "$TAG_NEW" \
-                  --arg vn "$VN" \
-                  --argjson vc "$VC" \
-                  --arg title "$TITLE_EFF" \
-                  --argjson body "$BODY_IN" \
-                  --arg html "$HTML_URL" \
-                  --arg pub "$PUB_EFF" \
-              '{
-                tag: $tag,
-                versionName: $vn,
-                versionCode: $vc,
-                title: $title,
-                body: $body,
-                htmlUrl: $html,
-                publishedAt: $pub
-              }' > new.json
+      elif [ "$OP" = "delete" ]; then
+        tmp=$(mktemp)
+        if [ -n "$TAG" ]; then
+          jq --arg tag "$TAG" 'map(select(.tag != $tag))' "$FILE" > "$tmp"
+        else
+          if ! echo "$INDEX" | grep -Eq '^[0-9]+$'; then echo "❌ index は整数で"; exit 1; fi
+          jq --argjson idx "$INDEX" 'to_entries | del(.[ $idx ]) | from_entries' "$FILE" > "$tmp"
+        fi
+        mv "$tmp" "$FILE"
+        echo "::set-output name=changed::true"
+        echo "✅ Deleted."
+        head -n 30 "$FILE"
+      else
+        echo "❌ 未知の op: $OP"; exit 1
+      fi
 
-            # 先頭に挿入
-            tmp=$(mktemp)
-            jq --argjson new "$(cat new.json)" '. as $old | [$new] + $old' "$FILE" > "$tmp"
-            mv "$tmp" "$FILE"
-            echo "::set-output name=changed::true"
-            echo "✅ Added: $TAG_NEW"
-            head -n 30 "$FILE"
-
-          elif [ "$OP" = "update" ]; then
-            # 更新ロジック: tag 優先。無ければ index 指定。
-            tmp=$(mktemp)
-            if [ -n "$TAG" ]; then
-              jq --arg tag "$TAG" \
-                 --arg vn "$VN" \
-                 --argjson vc "$( [ -n "$VC" ] && echo "$VC" || echo null )" \
-                 --argjson title "$TITLE_JSON" \
-                 --argjson body "$BODY_IN" \
-                 --argjson html "$HTML_JSON" \
-                 --argjson pub "$PUBAT_JSON" '
-                map(
-                  if .tag == $tag then
-                    . as $o
-                    | {
-                        tag: $o.tag,
-                        versionName: (if $vn != "" then $vn else $o.versionName end),
-                        versionCode: (if $vc != null then $vc else $o.versionCode end),
-                        title: (if $title != null then $title else $o.title end),
-                        body: (if $body != null then $body else $o.body end),
-                        htmlUrl: (if $html != null then $html else $o.htmlUrl end),
-                        publishedAt: (if $pub != null then $pub else $o.publishedAt end)
-                      }
-                  else .
-                  end
-                )' "$FILE" > "$tmp"
-            else
-              # index 指定（0始まり）
-              if ! echo "$INDEX" | grep -Eq '^[0-9]+$'; then echo "❌ index は整数で"; exit 1; fi
-              jq --argjson idx "$INDEX" \
-                 --arg vn "$VN" \
-                 --argjson vc "$( [ -n "$VC" ] && echo "$VC" || echo null )" \
-                 --argjson title "$TITLE_JSON" \
-                 --argjson body "$BODY_IN" \
-                 --argjson html "$HTML_JSON" \
-                 --argjson pub "$PUBAT_JSON" '
-                to_entries
-                | .[$idx] as $t?
-                | if $t == null then
-                    error("index範囲外")
-                  else
-                    (.[$idx].value) as $o
-                    | .[$idx].value = {
-                        tag: $o.tag,
-                        versionName: (if $vn != "" then $vn else $o.versionName end),
-                        versionCode: (if $vc != null then $vc else $o.versionCode end),
-                        title: (if $title != null then $title else $o.title end),
-                        body: (if $body != null then $body else $o.body end),
-                        htmlUrl: (if $html != null then $html else $o.htmlUrl end),
-                        publishedAt: (if $pub != null then $pub else $o.publishedAt end)
-                      }
-                    | from_entries
-                  end
-                ' "$FILE" > "$tmp"
-            fi
-            mv "$tmp" "$FILE"
-            echo "::set-output name=changed::true"
-            echo "✅ Updated."
-            head -n 30 "$FILE"
-
-          elif [ "$OP" = "delete" ]; then
-            tmp=$(mktemp)
-            if [ -n "$TAG" ]; then
-              jq --arg tag "$TAG" 'map(select(.tag != $tag))' "$FILE" > "$tmp"
-            else
-              if ! echo "$INDEX" | grep -Eq '^[0-9]+$'; then echo "❌ index は整数で"; exit 1; fi
-              jq --argjson idx "$INDEX" 'to_entries | del(.[ $idx ]) | from_entries' "$FILE" > "$tmp"
-            fi
-            mv "$tmp" "$FILE"
-            echo "::set-output name=changed::true"
-            echo "✅ Deleted."
-            head -n 30 "$FILE"
-          else
-            echo "❌ 未知の op: $OP"; exit 1
-          fi
-
-      - name: Commit & Push
-        if: steps.do.outputs.changed == 'true'
-        run: |
-          git config user.name "release-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add "$FILE"
-          git commit -m "${{ inputs.op }} Vaulta release entry"
-          git push
+  - name: Commit & Push
+    if: steps.do.outputs.changed == 'true'
+    run: |
+      git config user.name "release-bot"
+      git config user.email "actions@users.noreply.github.com"
+      git add "$FILE"
+      git commit -m "${{ inputs.op }} Vaulta release entry"
+      git push
