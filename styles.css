@@ -73,7 +73,6 @@ nav a:hover { opacity:1; text-decoration: underline; }
 .btn:hover { filter: brightness(0.98); }
 .btn--ghost { background: transparent; color: var(--ink); }
 
-/* Store badge & screenshots */
 .store-badges { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
 .store-badges img { height: 48px; width:auto; display:block; }
 
