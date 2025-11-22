@@ -1,5 +1,3 @@
-コード内のコメント部分だけ全て取り除いてください。
-
 name: Manage Vaulta Releases (Add/Update/Delete)
 
 on:
@@ -9,15 +7,12 @@ on:
         description: "操作: add / update / delete"
         required: true
         default: "add"
-      # 主キー（推奨）: v<version_name>+<version_code> の形。update/delete で使用。
       tag:
         description: "対象のtag（例: v2.23.0+173）※update/delete時に推奨"
         required: false
-      # 代替キー: 配列の0始まりindex。tagが無い時の代替（ヒューマンエラー防止のため推奨しない）
       index:
         description: "対象index（0始まり・任意）"
         required: false
-      # add で主に使用（updateでも上書き可/空なら現状維持）
       version_name:
         description: "例: 2.23.0（add時は必須）"
         required: false
@@ -67,15 +62,12 @@ jobs:
           INDEX="${{ inputs.index }}"
           VN="${{ inputs.version_name }}"
           VC="${{ inputs.version_code }}"
-
-          # add のときは version_name/version_code 必須
           if [ "$OP" = "add" ]; then
             if [ -z "$VN" ] || [ -z "$VC" ]; then
               echo "❌ add には version_name と version_code が必要です"; exit 1
             fi
           fi
 
-          # update/delete のとき、tag か index のどちらかが必要
           if [ "$OP" = "update" ] || [ "$OP" = "delete" ]; then
             if [ -z "$TAG" ] && [ -z "$INDEX" ]; then
               echo "❌ ${OP} には tag か index のどちらかが必要です"; exit 1
@@ -97,21 +89,17 @@ jobs:
           HTML_URL="${{ inputs.html_url }}"
           PUBLISHED_AT="${{ inputs.published_at }}"
 
-          # jq用に空文字→nullへ正規化（update時の差分上書きに使う）
           to_null_or_str() { if [ -z "$1" ]; then echo "null"; else printf '%s\n' "$(jq -Rn --arg v "$1" '$v')" ; fi; }
           TITLE_JSON=$(to_null_or_str "$TITLE_IN")
           HTML_JSON=$(to_null_or_str "$HTML_URL")
           PUBAT_JSON=$(to_null_or_str "$PUBLISHED_AT")
 
           if [ "$OP" = "add" ]; then
-            # 入力検証
             if ! echo "$VC" | grep -Eq '^[0-9]+$'; then echo "❌ version_code は整数で"; exit 1; fi
             TAG_NEW="v${VN}+${VC}"
             NOW_UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)
             TITLE_EFF=${TITLE_IN:-"Vaulta ${VN}"}
             PUB_EFF=${PUBLISHED_AT:-$NOW_UTC}
-
-            # new entry を構築
             jq -n --arg tag "$TAG_NEW" \
                   --arg vn "$VN" \
                   --argjson vc "$VC" \
@@ -129,7 +117,6 @@ jobs:
                 publishedAt: $pub
               }' > new.json
 
-            # 先頭に挿入
             tmp=$(mktemp)
             jq --argjson new "$(cat new.json)" '. as $old | [$new] + $old' "$FILE" > "$tmp"
             mv "$tmp" "$FILE"
@@ -138,7 +125,6 @@ jobs:
             head -n 30 "$FILE"
 
           elif [ "$OP" = "update" ]; then
-            # 更新ロジック: tag 優先。無ければ index 指定。
             tmp=$(mktemp)
             if [ -n "$TAG" ]; then
               jq --arg tag "$TAG" \
@@ -164,7 +150,6 @@ jobs:
                   end
                 )' "$FILE" > "$tmp"
             else
-              # index 指定（0始まり）
               if ! echo "$INDEX" | grep -Eq '^[0-9]+$'; then echo "❌ index は整数で"; exit 1; fi
               jq --argjson idx "$INDEX" \
                  --arg vn "$VN" \
