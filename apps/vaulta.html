@@ -12,13 +12,11 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="Vaulta｜紙や標準メモより安全。シフト解析もできるメモ帳">
   <meta property="og:description" content="ローカル保存・暗号化・スクショ/録画/サムネイル保護・PIN/生体認証。訪問介護の現場メモとシフト解析を端末内で完結。">
-  <meta property="og:url" content="./vaulta.html">
-  <!-- ▼ OGP画像にアプリアイコン（拡張子なし指定どおり） -->
-  <meta property="og:image" content="../assets/img/vaulta-icon">
+  <meta property="og:url" content="https://younashinashi.github.io/apps/vaulta.html">
+  <meta property="og:image" content="../assets/img/vaulta-icon.png">
   <meta name="twitter:card" content="summary_large_image">
 
   <link rel="stylesheet" href="../styles.css">
-  <!-- ▼ タブのアイコン（favicon） -->
   <link rel="icon" href="../assets/img/dev-icon.png">
 
   <!-- 構造化データ -->
@@ -39,16 +37,16 @@
 <body>
   <header>
     <div class="container" style="display:flex; justify-content:space-between; gap:16px;">
-      <!-- ▼ アイコン/テキスト＝ホームへ -->
       <a class="brand-link" href="../" aria-label="ホームへ">
         <img src="../assets/img/dev-icon.png" alt="公式サイトアイコン" class="brand__logo">
         <strong>公式サイト</strong>
       </a>
       <nav>
-        <!-- アプリ個別リンク（必要に応じて作成） -->
         <a href="./vaulta-releases.html">リリース</a>
         <a href="./vaulta-terms.html">利用規約</a>
         <a href="./vaulta-privacy.html">プライバシー</a>
+        <!-- 追加：APIキー取得方法 -->
+        <a href="./vaulta-api-key.html">APIキー取得方法</a>
       </nav>
     </div>
   </header>
@@ -58,34 +56,38 @@
       <h1>Vaulta</h1>
       <p>紙や標準メモより安全。シフト解析もできるメモ帳</p>
       <div class="store-badges" style="margin-top:12px;">
-        <!-- ▼ Google Play 公式バッジ画像（gp-icon.png） -->
         <a href="https://play.google.com/store/apps/details?id=com.younashinashi.vaulta" target="_blank" rel="noopener" aria-label="Google Play で Vaulta を入手">
-          <img src="../assets/img/gp-icon.png" alt="Google Play で手に入れよう">
+          <img src="../assets/img/gp-icon.png" alt="Google Play で手に入れよう" style="height:56px">
         </a>
       </div>
+      <!-- 任意：ヒーロー配下にも導線を追加したい場合は下を有効化
+      <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+        <a class="btn btn--ghost" href="./vaulta-api-key.html">APIキー取得方法</a>
+      </div>
+      -->
     </section>
 
     <section class="card">
       <h2>スクリーンショット</h2>
       <div class="screens">
         <figure class="screenshot">
-          <img src="../assets/img/vaulta-1.png" alt="Vaulta スクリーンショット1">
+          <img src="../assets/img/vaulta-1.png" alt="Vaulta スクリーンショット1" loading="lazy">
           <figcaption>シフト解析と一覧</figcaption>
         </figure>
         <figure class="screenshot">
-          <img src="../assets/img/vaulta-2.png" alt="Vaulta スクリーンショット2">
+          <img src="../assets/img/vaulta-2.png" alt="Vaulta スクリーンショット2" loading="lazy">
           <figcaption>当日メモの入力</figcaption>
         </figure>
         <figure class="screenshot">
-          <img src="../assets/img/vaulta-3.png" alt="Vaulta スクリーンショット3">
+          <img src="../assets/img/vaulta-3.png" alt="Vaulta スクリーンショット3" loading="lazy">
           <figcaption>ロック・セキュリティ設定</figcaption>
         </figure>
         <figure class="screenshot">
-          <img src="../assets/img/vaulta-4.png" alt="Vaulta スクリーンショット4">
+          <img src="../assets/img/vaulta-4.png" alt="Vaulta スクリーンショット4" loading="lazy">
           <figcaption>検索・抽出設定</figcaption>
         </figure>
         <figure class="screenshot">
-          <img src="../assets/img/vaulta-5.png" alt="Vaulta スクリーンショット5">
+          <img src="../assets/img/vaulta-5.png" alt="Vaulta スクリーンショット5" loading="lazy">
           <figcaption>その他の機能</figcaption>
         </figure>
       </div>
@@ -163,6 +165,8 @@
     </div>
   </footer>
 
-  <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
