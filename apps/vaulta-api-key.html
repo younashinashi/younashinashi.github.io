@@ -82,6 +82,10 @@
             <li>検索ボックスに <code>Maps JavaScript API</code> と入力 → 該当 API を選択</li>
             <li>「<strong>有効にする</strong>」をクリック</li>
           </ul>
+          <ul>
+            <li>同様に <code>Directions API</code> を検索して開き、「<strong>有効にする</strong>」をクリック</li>
+          </ul>
+          <p class="muted">Vaulta ではルート検索に <strong>Directions API</strong> を使用します。必ず有効化してください。</p>
         </li>
 
         <li>
@@ -91,6 +95,23 @@
             <li>画面上部の「<strong>認証情報を作成</strong>」→「<strong>API キー</strong>」</li>
             <li>「API キーを作成しました」ポップアップに表示されたキー（例：<code>AIzaSyA-xxxxxxxxxxxxxxxxxxxx</code>）をコピーし、Vaulta の設定欄に貼り付けてください。</li>
           </ul>
+        </li>
+
+        <li>
+          <h3>API キーの制限を設定する（推奨）</h3>
+          <p>第三者による不正利用を防ぐため、使用できる API を限定することをおすすめします。</p>
+          <ul>
+            <li>「<strong>API とサービス</strong>」→「<strong>認証情報</strong>」から、先ほど作成した API キーをクリック</li>
+            <li>「<strong>API の制限</strong>」セクションで「<strong>キーを制限</strong>」を選択</li>
+            <li>API の一覧から、少なくとも次の API にチェックを入れます：
+              <ul>
+                <li><strong>Directions API</strong>（必須：Vaulta のルート検索で使用）</li>
+                <li><strong>Maps JavaScript API</strong>（ブラウザ上で地図を表示する場合）</li>
+              </ul>
+            </li>
+            <li>画面下部の「<strong>保存</strong>」をクリック</li>
+          </ul>
+          <p class="muted">制限を設定したあとにアプリが動かない場合は、この画面で <strong>Directions API が選択されているか</strong>を再度確認してください。</p>
         </li>
       </ol>
 
