@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "tag": "v3.20.0+206",
+    "versionName": "3.20.0",
+    "versionCode": 206,
+    "title": "Vaulta 3.20.0",
+    "body": "・不具合の修正とパフォーマンスの改善を行いました。",
+    "htmlUrl": "",
+    "publishedAt": "2025-11-24T04:43:37Z"
+  }
+]
