@@ -67,8 +67,12 @@
                 ${item.versionName ? `Version ${item.versionName}` : ''}${item.versionCode ? ` (${item.versionCode})` : ''} ${d ? `・ ${d}` : ''}
               </p>
               <pre style="white-space:pre-wrap; margin:0;">${safeBody}</pre>
-              <div style="margin-top:10px;">
-                <a class="btn btn--ghost" href="${item.htmlUrl}" target="_blank" rel="noopener">GitHub Release を見る</a>
+              <div class="store-badges" style="margin-top:10px;">
+                <a href="https://play.google.com/store/apps/details?id=com.younashinashi.vaulta"
+                   target="_blank" rel="noopener"
+                   aria-label="Google Play で Vaulta を入手">
+                  <img src="../assets/img/gp-icon.png" alt="Google Play で手に入れよう">
+                </a>
               </div>
             </article>
           `;
