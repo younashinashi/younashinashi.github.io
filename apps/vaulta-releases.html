@@ -19,7 +19,11 @@
         <strong>公式サイト</strong>
       </a>
       <nav>
-        <a href="./vaulta.html">アプリページ</a>
+        <!-- ▼ ファイル名は実際の構成に合わせて変更してください -->
+        <a href="./vaulta-releases.html" aria-current="page">リリース</a>
+        <a href="./vaulta-terms.html">利用規約</a>
+        <a href="./vaulta-privacy.html">プライバシー</a>
+        <a href="./vaulta-api-key.html">APIキー取得方法</a>
       </nav>
     </div>
   </header>
@@ -58,7 +62,9 @@
 
         container.innerHTML = data.map(item => {
           const date = item.publishedAt ? new Date(item.publishedAt) : null;
-          const d = date ? `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}` : '';
+          const d = date
+            ? `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`
+            : '';
           const safeBody = (item.body || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
           return `
             <article class="card">
