@@ -1,5 +1,14 @@
 [
   {
+    "tag": "v3.29.0+215",
+    "versionName": "3.29.0",
+    "versionCode": 215,
+    "title": "Vaulta 3.29.0",
+    "body": "・不具合の修正とパフォーマンスの改善を行いました。",
+    "htmlUrl": "",
+    "publishedAt": "2025-12-09T22:25:54Z"
+  },
+  {
     "tag": "v3.27.0+213",
     "versionName": "3.27.0",
     "versionCode": 213,
