@@ -23,7 +23,7 @@ on:
         description: "未入力時は 'Vaulta <version_name>' を自動設定"
         required: false
       body:
-        description: "本文（Markdown可・複数行OK）"
+        description: "本文（Markdown可・改行含む想定）"
         required: false
       html_url:
         description: "GitHub Release のURLなど（任意）"
@@ -47,21 +47,27 @@ jobs:
 
       - name: Ensure jq & path
         run: |
+          set -euo pipefail
           sudo apt-get update -y
           sudo apt-get install -y jq
           mkdir -p data/releases
           if [ ! -f "$FILE" ]; then echo "[]" > "$FILE"; fi
-          echo "Existing file:"
+          echo "[INFO] 現在の $FILE 先頭30行:"
           head -n 30 "$FILE" || true
 
       - name: Validate inputs
         shell: bash
         run: |
+          set -euo pipefail
+
           OP="${{ inputs.op }}"
           TAG="${{ inputs.tag }}"
           INDEX="${{ inputs.index }}"
           VN="${{ inputs.version_name }}"
           VC="${{ inputs.version_code }}"
+
+          echo "[INFO] Validate inputs: op=$OP tag=$TAG index=$INDEX vn=$VN vc=$VC"
+
           if [ "$OP" = "add" ]; then
             if [ -z "$VN" ] || [ -z "$VC" ]; then
               echo "❌ add には version_name と version_code が必要です"; exit 1
@@ -79,32 +85,69 @@ jobs:
         id: do
         shell: bash
         run: |
+          set -euo pipefail
+
           OP="${{ inputs.op }}"
           TAG="${{ inputs.tag }}"
           INDEX="${{ inputs.index }}"
           VN="${{ inputs.version_name }}"
           VC="${{ inputs.version_code }}"
           TITLE_IN="${{ inputs.title }}"
-          BODY_IN='${{ toJSON(inputs.body) }}'
           HTML_URL="${{ inputs.html_url }}"
           PUBLISHED_AT="${{ inputs.published_at }}"
 
-          to_null_or_str() { if [ -z "$1" ]; then echo "null"; else printf '%s\n' "$(jq -Rn --arg v "$1" '$v')" ; fi; }
+          echo "[INFO] OP=$OP TAG=$TAG INDEX=$INDEX"
+          echo "[INFO] VN=$VN VC=$VC"
+          echo "[INFO] TITLE_IN=$TITLE_IN"
+          echo "[INFO] HTML_URL=$HTML_URL"
+          echo "[INFO] PUBLISHED_AT=$PUBLISHED_AT"
+
+          # BODY は GITHUB_EVENT_PATH から安全に取得（複数行対応）
+          if [ -z "${GITHUB_EVENT_PATH:-}" ]; then
+            echo "❌ GITHUB_EVENT_PATH が未設定です"; exit 1
+          fi
+          BODY_IN="$(jq -r '.inputs.body // ""' "$GITHUB_EVENT_PATH")"
+
+          if [ -n "$BODY_IN" ]; then
+            HAS_BODY="true"
+            echo "[INFO] BODY が入力されました（複数行対応）"
+          else
+            HAS_BODY="false"
+            echo "[INFO] BODY 入力なし（update の場合は既存値を維持）"
+          fi
+
+          # 空文字なら null、それ以外は JSON 文字列に変換するヘルパ
+          to_null_or_str() {
+            if [ -z "$1" ]; then
+              echo "null"
+            else
+              # jq で安全にクォートした JSON 文字列を返す
+              printf '%s\n' "$(jq -Rn --arg v "$1" '$v')"
+            fi
+          }
+
           TITLE_JSON=$(to_null_or_str "$TITLE_IN")
           HTML_JSON=$(to_null_or_str "$HTML_URL")
           PUBAT_JSON=$(to_null_or_str "$PUBLISHED_AT")
 
           if [ "$OP" = "add" ]; then
-            if ! echo "$VC" | grep -Eq '^[0-9]+$'; then echo "❌ version_code は整数で"; exit 1; fi
+            if ! echo "$VC" | grep -Eq '^[0-9]+$'; then
+              echo "❌ version_code は整数で"; exit 1
+            fi
+
             TAG_NEW="v${VN}+${VC}"
             NOW_UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)
             TITLE_EFF=${TITLE_IN:-"Vaulta ${VN}"}
             PUB_EFF=${PUBLISHED_AT:-$NOW_UTC}
+
+            echo "[INFO] 追加する tag: $TAG_NEW"
+            echo "[INFO] 追加する publishedAt: $PUB_EFF"
+
             jq -n --arg tag "$TAG_NEW" \
                   --arg vn "$VN" \
                   --argjson vc "$VC" \
                   --arg title "$TITLE_EFF" \
-                  --argjson body "$BODY_IN" \
+                  --arg body "$BODY_IN" \
                   --arg html "$HTML_URL" \
                   --arg pub "$PUB_EFF" \
               '{
@@ -120,20 +163,23 @@ jobs:
             tmp=$(mktemp)
             jq --argjson new "$(cat new.json)" '. as $old | [$new] + $old' "$FILE" > "$tmp"
             mv "$tmp" "$FILE"
-            echo "::set-output name=changed::true"
+
+            echo "changed=true" >> "$GITHUB_OUTPUT"
             echo "✅ Added: $TAG_NEW"
             head -n 30 "$FILE"
 
           elif [ "$OP" = "update" ]; then
             tmp=$(mktemp)
+
             if [ -n "$TAG" ]; then
               jq --arg tag "$TAG" \
                  --arg vn "$VN" \
                  --argjson vc "$( [ -n "$VC" ] && echo "$VC" || echo null )" \
                  --argjson title "$TITLE_JSON" \
-                 --argjson body "$BODY_IN" \
+                 --arg body "$BODY_IN" \
                  --argjson html "$HTML_JSON" \
-                 --argjson pub "$PUBAT_JSON" '
+                 --argjson pub "$PUBAT_JSON" \
+                 --arg hasBody "$HAS_BODY" '
                 map(
                   if .tag == $tag then
                     . as $o
@@ -142,7 +188,7 @@ jobs:
                         versionName: (if $vn != "" then $vn else $o.versionName end),
                         versionCode: (if $vc != null then $vc else $o.versionCode end),
                         title: (if $title != null then $title else $o.title end),
-                        body: (if $body != null then $body else $o.body end),
+                        body: (if $hasBody == "true" then $body else $o.body end),
                         htmlUrl: (if $html != null then $html else $o.htmlUrl end),
                         publishedAt: (if $pub != null then $pub else $o.publishedAt end)
                       }
@@ -150,14 +196,18 @@ jobs:
                   end
                 )' "$FILE" > "$tmp"
             else
-              if ! echo "$INDEX" | grep -Eq '^[0-9]+$'; then echo "❌ index は整数で"; exit 1; fi
+              if ! echo "$INDEX" | grep -Eq '^[0-9]+$'; then
+                echo "❌ index は整数で"; exit 1
+              fi
+
               jq --argjson idx "$INDEX" \
                  --arg vn "$VN" \
                  --argjson vc "$( [ -n "$VC" ] && echo "$VC" || echo null )" \
                  --argjson title "$TITLE_JSON" \
-                 --argjson body "$BODY_IN" \
+                 --arg body "$BODY_IN" \
                  --argjson html "$HTML_JSON" \
-                 --argjson pub "$PUBAT_JSON" '
+                 --argjson pub "$PUBAT_JSON" \
+                 --arg hasBody "$HAS_BODY" '
                 to_entries
                 | .[$idx] as $t?
                 | if $t == null then
@@ -169,7 +219,7 @@ jobs:
                         versionName: (if $vn != "" then $vn else $o.versionName end),
                         versionCode: (if $vc != null then $vc else $o.versionCode end),
                         title: (if $title != null then $title else $o.title end),
-                        body: (if $body != null then $body else $o.body end),
+                        body: (if $hasBody == "true" then $body else $o.body end),
                         htmlUrl: (if $html != null then $html else $o.htmlUrl end),
                         publishedAt: (if $pub != null then $pub else $o.publishedAt end)
                       }
@@ -177,8 +227,9 @@ jobs:
                   end
                 ' "$FILE" > "$tmp"
             fi
+
             mv "$tmp" "$FILE"
-            echo "::set-output name=changed::true"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
             echo "✅ Updated."
             head -n 30 "$FILE"
 
@@ -187,13 +238,18 @@ jobs:
             if [ -n "$TAG" ]; then
               jq --arg tag "$TAG" 'map(select(.tag != $tag))' "$FILE" > "$tmp"
             else
-              if ! echo "$INDEX" | grep -Eq '^[0-9]+$'; then echo "❌ index は整数で"; exit 1; fi
-              jq --argjson idx "$INDEX" 'to_entries | del(.[ $idx ]) | from_entries' "$FILE" > "$tmp"
+              if ! echo "$INDEX" | grep -Eq '^[0-9]+$'; then
+                echo "❌ index は整数で"; exit 1
+              fi
+              jq --argjson idx "$INDEX" \
+                 'to_entries | del(.[ $idx ]) | from_entries' "$FILE" > "$tmp"
             fi
+
             mv "$tmp" "$FILE"
-            echo "::set-output name=changed::true"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
             echo "✅ Deleted."
             head -n 30 "$FILE"
+
           else
             echo "❌ 未知の op: $OP"; exit 1
           fi
@@ -201,6 +257,7 @@ jobs:
       - name: Commit & Push
         if: steps.do.outputs.changed == 'true'
         run: |
+          set -euo pipefail
           git config user.name "release-bot"
           git config user.email "actions@users.noreply.github.com"
           git add "$FILE"
