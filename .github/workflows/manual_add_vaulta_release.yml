@@ -103,10 +103,13 @@ jobs:
           echo "[INFO] PUBLISHED_AT=$PUBLISHED_AT"
 
           # BODY は GITHUB_EVENT_PATH から安全に取得（複数行対応）
-          if [ -z "${GITHUB_EVENT_PATH:-}" ]; then
-            echo "❌ GITHUB_EVENT_PATH が未設定です"; exit 1
-          fi
-          BODY_IN="$(jq -r '.inputs.body // ""' "$GITHUB_EVENT_PATH")"
+# BODY は GITHUB_EVENT_PATH から安全に取得（複数行対応）
+if [ -z "${GITHUB_EVENT_PATH:-}" ]; then
+  echo "❌ GITHUB_EVENT_PATH が未設定です"; exit 1
+fi
+# Windows 由来の \r を削除して、改行コードを LF に統一
+BODY_IN="$(jq -r '.inputs.body // ""' "$GITHUB_EVENT_PATH" | tr -d '\r')"
+
 
           if [ -n "$BODY_IN" ]; then
             HAS_BODY="true"
